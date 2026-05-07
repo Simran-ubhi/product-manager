@@ -1,12 +1,25 @@
 import Link from "next/link";
 
-const products = [
-    {id:"1", name:"Laptop", price: 1200},
-    {id:"2", name:"Phone", price: 1000},
-    {id:"3", name:"Headphones", price: 500}
-];
+type Product = {
+    id:string;
+    name:string;
+    price:number;
+}
 
-export default function AdminProductPage(){
+async function getProducts(): Promise<Product[]>{
+    const res = await fetch("http://localhost:3000/api/products",{
+        cache: "no-store",
+    })
+
+    if(!res.ok){
+        throw new Error("Failed to Fetch Products");
+    }
+
+    return res.json();
+}
+
+export default async function AdminProductPage(){
+    const products = await getProducts();
     return (
         <div>
             <h1 style={{margin: 10, fontSize: "20px"}}>Admin Products</h1>
