@@ -1,23 +1,24 @@
-let products = [
-    {id:"1", name:"Product A", price: 10},
-    {id:"2", name:"Product B", price: 20},
-];
+import { prisma } from "@/lib/prisma";
 
+export async function GET() {
+  const products = await prisma.product.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-export async function GET(){
-    return Response.json(products);
+  return Response.json(products);
 }
 
-export async function POST(req: Request){
-    const data = await req.json();
+export async function POST(req: Request) {
+  const body = await req.json();
 
-    const newProduct = {
-        id: Date.now().toString(),
-        name: data.name,
-        price: data.price,
-    };
+  const product = await prisma.product.create({
+    data: {
+      name: body.name,
+      price: Number(body.price),
+    },
+  });
 
-    products.push(newProduct);
-
-    return Response.json(newProduct);
+  return Response.json(product, { status: 201 });
 }
